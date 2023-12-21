@@ -94,41 +94,41 @@ module cordic_iterative #(
      );
 
 
-    always @(state, x_in, y_in, z_in, data_out_valid_strobe, counter_value, input_select, data_in_valid_strobe_i, x_i, y_i, z_i) begin
-        next_state <= state;
-        next_data_out_valid_strobe <= data_out_valid_strobe;
-        next_x_in <= x_in;
-        next_y_in <= y_in;
-        next_z_in <= z_in;
-        next_counter_value <= counter_value;
-        next_input_select <= input_select;
+    always @(state, x_in or y_in or z_in or data_out_valid_strobe or counter_value or input_select or data_in_valid_strobe_i or x_i or y_i or z_i) begin
+        next_state = state;
+        next_data_out_valid_strobe = data_out_valid_strobe;
+        next_x_in = x_in;
+        next_y_in = y_in;
+        next_z_in = z_in;
+        next_counter_value = counter_value;
+        next_input_select = input_select;
 
         case (state)
             IDLE_STATE: begin
                 if (data_in_valid_strobe_i == 1'b1) begin
-                    next_state <= CALCULATION_STATE;
-                    next_x_in <= x_i;
-                    next_y_in <= y_i;
-                    next_z_in <= z_i;
-                    next_counter_value <= 0;
-                    next_input_select <= 0;
+                    next_state = CALCULATION_STATE;
+                    next_x_in = x_i;
+                    next_y_in = y_i;
+                    next_z_in = z_i;
+                    next_counter_value = 0;
+                    next_input_select = 0;
                 end
             end 
             CALCULATION_STATE: begin
-                next_input_select <= 1;
+                next_input_select = 1;
                 if (counter_value == ITERATIONS-1) begin
-                    next_state <= OUTPUT_STATE;
-                    next_data_out_valid_strobe <= 1;
+                    next_state = OUTPUT_STATE;
+                    next_data_out_valid_strobe = 1;
                 end else begin
-                    next_counter_value <= counter_value + 1;
+                    next_counter_value = counter_value + 1;
                 end
             end
             OUTPUT_STATE: begin
-                next_state <= IDLE_STATE;
-                next_data_out_valid_strobe <= 0;
+                next_state = IDLE_STATE;
+                next_data_out_valid_strobe = 0;
             end
             default:
-                next_state <= IDLE_STATE;
+                next_state = IDLE_STATE;
         endcase
     end
 
@@ -137,7 +137,7 @@ module cordic_iterative #(
     assign z_o = z_out;
     assign data_out_valid_strobe_o = data_out_valid_strobe;
 
-    always @* begin
+    always @(input_select or x_in or y_in or z_in or x_out or y_out or z_out) begin
         if (input_select == 1'b0) begin
             x_mux = x_in;
             y_mux = y_in;
