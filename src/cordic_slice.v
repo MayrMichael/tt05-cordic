@@ -6,7 +6,7 @@ module cordic_slice #(
     input clk_i,
     input rst_i,
     input signed [N_FRAC:0] current_rotation_angle_i,	
-    input unsigned [BW_SHIFT_VALUE-1:0] shift_value_i,				
+    input [BW_SHIFT_VALUE-1:0] shift_value_i,				
     input signed [N_FRAC:0] x_i,						
     input signed [N_FRAC:0] y_i,						
     input signed [N_FRAC:0] z_i,						

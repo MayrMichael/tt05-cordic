@@ -1,5 +1,5 @@
 `default_nettype none
-//`include "cordic_iterative.v"
+`include "cordic_iterative.v"
 
 module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
@@ -25,7 +25,7 @@ module tt_um_mayrmichael_cordic (
     assign x = 8'b01001011; 
     assign y = 8'b00000000;
 
-    assign uio_oe = 8'b00000001 ;
+    assign uio_oe = 8'b00000001;
     assign uio_out[7:1] = 7'b0000000;
     assign uio_out[0] = data_finished;
     assign data_arrived = uio_in[1];
