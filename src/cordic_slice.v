@@ -20,7 +20,7 @@ module cordic_slice #(
     reg signed [N_FRAC:0] next_z;
 
 
-    always @(posedge clk_i or posedge rst_i) begin
+    always @(posedge clk_i) begin
         if (rst_i == 1'b0) begin
             x_o <= 0;
             y_o <= 0;

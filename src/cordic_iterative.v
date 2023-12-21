@@ -56,7 +56,7 @@ module cordic_iterative #(
     reg signed [N_FRAC:0] x_mux, y_mux, z_mux;
     wire signed [N_FRAC:0] x_out, y_out, z_out;
 
-    always @(posedge clk_i or posedge rst_i) begin
+    always @(posedge clk_i) begin
         if (rst_i == 1'b0) begin
             x_in <= 0;
             y_in <= 0;
