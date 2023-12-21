@@ -31,19 +31,19 @@ module cordic_slice #(
         end
     end
 
-    always @(x_i, y_i, z_i, shift_value_i, current_rotation_angle_i) begin
-        next_x <= x_i;
-	    next_y <= y_i;
-	    next_z <= z_i;
+    always @* begin
+        next_x = x_i;
+	    next_y = y_i;
+	    next_z = z_i;
 
         if (z_i < 0) begin
-            next_x <= x_i + (y_i >>> shift_value_i);
-            next_y <= y_i - (x_i >>> shift_value_i);
-		    next_z <= z_i + current_rotation_angle_i;
+            next_x = x_i + (y_i >>> shift_value_i);
+            next_y = y_i - (x_i >>> shift_value_i);
+		    next_z = z_i + current_rotation_angle_i;
         end else begin
-            next_x <= x_i - (y_i >>> shift_value_i);
-            next_y <= y_i + (x_i >>> shift_value_i);
-		    next_z <= z_i - current_rotation_angle_i;
+            next_x = x_i - (y_i >>> shift_value_i);
+            next_y = y_i + (x_i >>> shift_value_i);
+		    next_z = z_i - current_rotation_angle_i;
         end
     end
 
