@@ -1,3 +1,4 @@
+`default_nettype none
 module cordic_slice #(
     parameter BW_SHIFT_VALUE = 4,
     parameter N_FRAC = 15

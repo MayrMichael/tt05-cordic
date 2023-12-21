@@ -1,5 +1,5 @@
 //`include "cordic_slice.v"
-
+`default_nettype none
 module cordic_iterative #(
     parameter N_FRAC = 7
 ) (

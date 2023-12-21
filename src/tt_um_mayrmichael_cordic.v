@@ -13,7 +13,7 @@ module tt_um_mayrmichael_cordic #() (
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
-    wire [7:0] x, y;
+    wire [7:0] x, y, z_o, y_o;
     wire data_arrived, data_finished;
     wire [6:0] unused_i_wire;
 
@@ -26,7 +26,7 @@ module tt_um_mayrmichael_cordic #() (
     assign data_arrived = uio_in[1];
 
 
-    cordic_iterative #() CORDIC_ITERATIVE_INST
+    cordic_iterative CORDIC_ITERATIVE_INST
     (.clk_i(clk),
      .rst_i(rst_n),
      .x_i(x),
@@ -34,10 +34,8 @@ module tt_um_mayrmichael_cordic #() (
      .z_i(ui_in),
      .data_in_valid_strobe_i(data_arrived),
      .x_o(uo_out),
-     /* verilator lint_off PINCONNECTEMPTY */
-     .y_o(),
-     .z_o(),
-     /* verilator lint_on PINCONNECTEMPTY */
+     .y_o(z_o),
+     .z_o(y_o),
      .data_out_valid_strobe_o(data_finished)
      );
     
