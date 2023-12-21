@@ -1,5 +1,5 @@
 `default_nettype none
-`include "cordic_iterative.v"
+//`include "cordic_iterative.v"
 
 module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
