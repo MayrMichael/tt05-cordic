@@ -1,7 +1,7 @@
 `default_nettype none
 //`include "cordic_iterative.v"
 
-module tt_um_mayrmichael_cordic #() (
+module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
     input  wire [7:0] ui_in,    // Dedicated inputs - connected to the input switches
     output wire [7:0] uo_out,   // Dedicated outputs - connected to the 7 segment display
@@ -13,7 +13,12 @@ module tt_um_mayrmichael_cordic #() (
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
-    wire [7:0] x, y, z_o, y_o;
+    wire [7:0] x, y;
+
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire [7:0] z_o, y_o;
+    /* verilator lint_on UNUSEDSIGNAL */
+
     wire data_arrived, data_finished;
     wire [6:0] unused_i_wire;
 
