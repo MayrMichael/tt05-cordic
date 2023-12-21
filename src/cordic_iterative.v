@@ -1,5 +1,7 @@
 `include "cordic_slice.v"
 `default_nettype none
+`timescale 1ns/1ns
+
 module cordic_iterative #(
     parameter N_FRAC = 7
 ) (
@@ -80,7 +82,7 @@ module cordic_iterative #(
     assign current_rotation_angle = ANGLES_VECTOR[counter_value];
     assign shift_value = SHIFT_VECTOR[counter_value];
 
-    cordic_slice #(.N_FRAC(N_FRAC), .BW_SHIFT_VALUE(BW_SHIFT_VECTOR)) CORDIC_SLICE_INST
+    cordic_slice #(.N_FRAC(N_FRAC), .BW_SHIFT_VALUE(BW_SHIFT_VECTOR)) cordic_slice0
     (.clk_i(clk_i),
      .rst_i(rst_i),
      .current_rotation_angle_i(current_rotation_angle),
