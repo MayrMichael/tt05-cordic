@@ -1,6 +1,5 @@
 //`include "cordic_slice.v"
 `default_nettype none
-`timescale 1ns/1ns
 
 module cordic_iterative #(
     parameter N_FRAC = 7
