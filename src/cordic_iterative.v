@@ -137,15 +137,15 @@ module cordic_iterative #(
     assign z_o = z_out;
     assign data_out_valid_strobe_o = data_out_valid_strobe;
 
-    always @(input_select, x_in, y_in, z_in, x_out, y_out, z_out) begin
+    always @* begin
         if (input_select == 1'b0) begin
-            x_mux <= x_in;
-            y_mux <= y_in;
-            z_mux <= z_in;
+            x_mux = x_in;
+            y_mux = y_in;
+            z_mux = z_in;
         end else begin
-            x_mux <= x_out;
-            y_mux <= y_out;
-            z_mux <= z_out;
+            x_mux = x_out;
+            y_mux = y_out;
+            z_mux = z_out;
         end
     end
 
