@@ -94,7 +94,7 @@ module cordic_iterative #(
      );
 
 
-    always @(state, x_in or y_in or z_in or data_out_valid_strobe or counter_value or input_select or data_in_valid_strobe_i or x_i or y_i or z_i) begin
+    always @* begin
         next_state = state;
         next_data_out_valid_strobe = data_out_valid_strobe;
         next_x_in = x_in;
@@ -137,7 +137,7 @@ module cordic_iterative #(
     assign z_o = z_out;
     assign data_out_valid_strobe_o = data_out_valid_strobe;
 
-    always @(input_select or x_in or y_in or z_in or x_out or y_out or z_out) begin
+    always @* begin
         if (input_select == 1'b0) begin
             x_mux = x_in;
             y_mux = y_in;
