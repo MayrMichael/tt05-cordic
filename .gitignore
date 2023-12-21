@@ -7,3 +7,7 @@ src/sim_build
 src/__pycache__/
 src/results.xml
 src/user_config.tcl
+test/cordic/sim_build
+test/cordic/__pycache__/
+test/cordic/results.xml
+test/cordic/user_config.tcl
