@@ -1,4 +1,4 @@
-`include "cordic/cordic_slice.v"
+`include "cordic_slice.v"
 
 module cordic_iterative #(
     parameter N_FRAC = 7
