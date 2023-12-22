@@ -1,12 +1,14 @@
 `default_nettype none
 
-`include "cordic_iterative.v"
-`include "cordic_slice.v"
+// `include "cordic_iterative.v"
+// `include "cordic_slice.v"
+
+`include "sin_generator.v"
 
 module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
     input  wire [7:0] ui_in,    // Dedicated inputs - connected to the input switches
-    output wire [7:0] uo_out,   // Dedicated outputs - connected to the 7 segment display
+    output reg [7:0] uo_out,   // Dedicated outputs - connected to the 7 segment display
     input  wire [7:0] uio_in,   // IOs: Bidirectional Input path
     output wire [7:0] uio_out,  // IOs: Bidirectional Output path
     output wire [7:0] uio_oe,   // IOs: Bidirectional Enable path (active high: 0=input, 1=output)
@@ -15,36 +17,67 @@ module tt_um_mayrmichael_cordic (
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
-    wire [7:0] x, y;
+    // wire [7:0] x, y;
 
-    /* verilator lint_off UNUSEDSIGNAL */
-    wire [7:0] z_o, y_o;
-    /* verilator lint_on UNUSEDSIGNAL */
+    // /* verilator lint_off UNUSEDSIGNAL */
+    // wire [7:0] z_o, y_o;
+    // /* verilator lint_on UNUSEDSIGNAL */
 
-    wire data_arrived, data_finished;
-    wire [6:0] unused_i_wire;
+    // wire data_arrived, data_finished;
+    // wire [6:0] unused_i_wire;
 
-    assign x = 8'b01001011; 
-    assign y = 8'b00000000;
+    // assign x = 8'b01001011; 
+    // assign y = 8'b00000000;
 
-    assign uio_oe = 8'b00000001;
-    assign uio_out[7:1] = 7'b0000000;
-    assign uio_out[0] = data_finished;
-    assign data_arrived = uio_in[1];
+    // assign uio_oe = 8'b00000001;
+    // assign uio_out[7:1] = 7'b0000000;
+    // assign uio_out[0] = data_finished;
+    // assign data_arrived = uio_in[1];
 
 
-    cordic_iterative CORDIC_ITERATIVE_INST
+    // cordic_iterative CORDIC_ITERATIVE_INST
+    // (.clk_i(clk),
+    //  .rst_i(rst_n),
+    //  .x_i(x),
+    //  .y_i(y),
+    //  .z_i(ui_in),
+    //  .data_in_valid_strobe_i(data_arrived),
+    //  .x_o(uo_out),
+    //  .y_o(z_o),
+    //  .z_o(y_o),
+    //  .data_out_valid_strobe_o(data_finished)
+    //  );
+
+    wire [7:0] data, phase, amplitude;
+    wire data_out_valid_strobe;
+
+    sin_generator sin_generator_inst
     (.clk_i(clk),
      .rst_i(rst_n),
-     .x_i(x),
-     .y_i(y),
-     .z_i(ui_in),
-     .data_in_valid_strobe_i(data_arrived),
-     .x_o(uo_out),
-     .y_o(z_o),
-     .z_o(y_o),
-     .data_out_valid_strobe_o(data_finished)
-     );
-    
+     .phase_i(ui_in),
+     .new_phase_valid_strobe_i(uio_in[0]),
+     .amplitude_i(ui_in),
+     .new_amplitude_valid_strobe_i(uio_in[1]),
+     .next_data_strobe_i(uio_in[2]),
+     .data_o(data),
+     .data_out_valid_strobe_o(data_out_valid_strobe),
+     .phase_o(phase),
+     .amplitude_o(amplitude)
+    );
+
+    assign uio_out[7] = data_out_valid_strobe;
+
+    assign uio_oe = 8'b10000000;
+    assign uio_out[6:0] = 7'b0000000;
+
+    always @(posedge clk ) begin
+        if (uio_in[3] == 1'b1 && uio_in[4] == 1'b1) begin
+            uo_out <= amplitude;
+        end else if (uio_in[3] == 1'b1 && uio_in[4] == 1'b0) begin
+            uo_out <= phase;
+        end else begin
+            uo_out <= data;
+        end
+    end
 
 endmodule
