@@ -27,8 +27,12 @@ def sra(x, s, sfixed_fract):
         return x_int / 2**sfixed_fract
 
         
-def cordic(xi, yi, zi, angles_vector, k, shift_vector, iterations, lsb, sfixed_fract):
-    m = 1
+def cordic(xi, yi, zi, angles_vector, shift_vector, iterations, sfixed_fract):
+    
+    lsb = 2**(-sfixed_fract)
+
+
+    m = 1 # because of circular
     xo = np.zeros(iterations+1)
     yo = np.zeros(iterations+1)
     zo = np.zeros(iterations+1)
@@ -100,7 +104,7 @@ def test_cordic():
 
     zi = quantize_value(zi + phase, lsb)
 
-    xo, yo, zo = cordic(xi,yi,zi, angles_vector, k, shift_vector, iterations, lsb, sfixed_fract)
+    xo, yo, zo = cordic(xi,yi,zi, angles_vector,  shift_vector, iterations, sfixed_fract)
 
     xo_m = np.asarray([0.607177734375000,	0.607177734375000,	0.303588867187500,	0.531280517578125,	0.635620117187500,	0.587615966796875,	0.562377929687500,	0.575286865234375,	0.568908691406250,	0.565704345703125,	0.564117431640625,	0.564910888671875,	0.565307617187500,	0.565124511718750,	0.565032958984375,	0.565002441406250])
 
@@ -124,11 +128,10 @@ def get_rotated_vector(phase, sfixed_fract, iterations):
     yi = quantize_value(0, lsb)
     zi = quantize_value(0, lsb)
     xi = quantize_value(xi * k, lsb)
-    #xi = quantize_value(xi - lsb, lsb)
     
     zi = quantize_value(zi + phase, lsb)
 
-    xo, yo, zo = cordic(xi,yi,zi, angles_vector, k, shift_vector, iterations, lsb, sfixed_fract)
+    xo, yo, zo = cordic(xi,yi,zi, angles_vector, shift_vector, iterations, sfixed_fract)
 
     return xo[iterations], yo[iterations]
 

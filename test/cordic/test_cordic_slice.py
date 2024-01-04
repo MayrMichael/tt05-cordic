@@ -38,7 +38,7 @@ async def cosim_cordic_slice(dut):
     
     zi = cordic.quantize_value(zi + phase, lsb)
 
-    xo, yo, zo = cordic.cordic(xi,yi,zi, angles_vector, k, shift_vector, iterations, lsb, sfixed_fract)
+    xo, yo, zo = cordic.cordic(xi,yi,zi, angles_vector,  shift_vector, iterations, sfixed_fract)
 
     # parameters from cordic slice
     N_FRAC = 15

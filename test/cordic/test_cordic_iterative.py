@@ -39,7 +39,7 @@ async def cosim_cordic_iterative(dut):
     
     zi = cordic.quantize_value(zi + phase, lsb)
 
-    xo, yo, zo = cordic.cordic(xi,yi,zi, angles_vector, k, shift_vector, iterations, lsb, sfixed_fract)
+    xo, yo, zo = cordic.cordic(xi,yi,zi, angles_vector, shift_vector, iterations, sfixed_fract)
 
 
     dut.x_i.value = frac2bin(xi, sfixed_fract, FRAC_BITS)
