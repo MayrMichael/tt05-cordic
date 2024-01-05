@@ -4,6 +4,7 @@
 `include "sin_generator.v"
 `include "top_triangle_generator.v"
 `include "strobe_generator.v"
+`include "square_puls_generator.v"
 
 
 module tt_um_mayrmichael_cordic (
@@ -82,9 +83,19 @@ module tt_um_mayrmichael_cordic (
      .data_sawtooth_o(data_sawtooth),						
      .data_sawtooth_out_valid_strobe_o(data_sawtooth_out_valid_strobe),
      .data_triangle_o(data_triangle),						
-     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe),
-     .data_square_puls_o(data_square_puls),						
-     .data_square_puls_out_valid_strobe_o(data_square_puls_out_valid_strobe)		
+     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe)//,
+//     .data_square_puls_o(data_square_puls),						
+//     .data_square_puls_out_valid_strobe_o(data_square_puls_out_valid_strobe)		
+    );
+
+    square_puls_generator square_puls_generator_inst
+    (.clk_i(clk),
+     .rst_i(rst_n),
+     .phase_i(phase),
+     .threshold_i(amplitude),		
+     .next_data_strobe_i(strobe), 						
+     .data_o(data_square_puls),						
+     .data_out_valid_strobe_o(data_square_puls_out_valid_strobe)
     );
 
 

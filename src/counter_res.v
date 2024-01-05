@@ -51,7 +51,7 @@ module counter_res #(
             if (counter_value <= amplitude_i) begin
                 next_counter_value = counter_value + addend_i;
             end else begin
-                next_counter_value = ~counter_value;
+                next_counter_value = -counter_value;
             end
         end
     end

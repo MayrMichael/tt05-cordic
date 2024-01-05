@@ -17,20 +17,37 @@
 `ifndef __SQUARE_PULS_GENERATOR
 `define __SQUARE_PULS_GENERATOR
 
+`include "counter.v"
+
 module square_puls_generator #(
     parameter N_FRAC = 7
 ) (
     input clk_i,
     input rst_i,
-    input signed [N_FRAC:0] threshold_i,
-    input signed [N_FRAC:0] counter_value_i,			
-    input next_counter_value_strobe_i, 						
+    input signed [N_FRAC:0] phase_i,
+    input signed [N_FRAC:0] threshold_i,			
+    input next_data_strobe_i, 						
     output wire signed [N_FRAC:0] data_o,						
     output wire data_out_valid_strobe_o
 );
 
     reg signed [N_FRAC:0] data, next_data;
     reg data_out_valid_strobe, next_data_out_valid_strobe;
+
+    wire counter_value_valid_strobe;
+    wire signed [N_FRAC:0] counter_value;
+
+    localparam ONE = 8'b0111_1111;
+    localparam MINUS_ONE = 8'b1000_0001; 
+
+    counter counter_inst
+    (.clk_i(clk_i),
+     .rst_i(rst_i),
+     .addend_i(phase_i),			
+     .next_data_strobe_i(next_data_strobe_i), 						
+     .data_o(counter_value),						
+     .data_out_valid_strobe_o(counter_value_valid_strobe)
+    );
 
     always @(posedge clk_i) begin
         if (rst_i == 1'b0) begin
@@ -40,18 +57,15 @@ module square_puls_generator #(
             data <= next_data;
             data_out_valid_strobe <= next_data_out_valid_strobe;
         end
-    end
-
-    localparam ONE = 8'b0111_1111;
-    localparam MINUS_ONE = 8'b1000_0001;  
+    end 
 
     always @* begin
         next_data_out_valid_strobe = 0;
         next_data = data;
         
-        if (next_counter_value_strobe_i == 1'b1) begin
+        if (counter_value_valid_strobe == 1'b1) begin
             next_data_out_valid_strobe = 1;
-            if (counter_value_i >= threshold_i) begin
+            if (counter_value >= threshold_i) begin
                 next_data = ONE;
             end else begin
                 next_data = MINUS_ONE;
