@@ -11,3 +11,7 @@ test/cordic/sim_build
 test/cordic/__pycache__/
 test/cordic/results.xml
 test/cordic/user_config.tcl
+test/triangle/sim_build
+test/triangle/__pycache__/
+test/triangle/results.xml
+test/triangle/user_config.tcl

@@ -27,6 +27,7 @@ module tt_um_mayrmichael_cordic (
 
     wire strobe;
     wire set_phase, set_amplitude;
+
     wire [7:0] set_phase_amplitude_value;
     wire enable;
     wire [1:0] waveform;
@@ -37,10 +38,10 @@ module tt_um_mayrmichael_cordic (
     localparam TRIANGLE = 2'b11;
 
     assign set_phase_amplitude_value = ui_in;
+    
     assign uo_out = data;
 
     assign uio_oe = 8'b10000000;
-
     assign uio_out[7] = data_valid_strobe;
     assign uio_out[6:0] = 7'b0000000;
 
@@ -48,6 +49,8 @@ module tt_um_mayrmichael_cordic (
     assign waveform = uio_in[2:1];
     assign set_phase = uio_in[3];
     assign set_amplitude = uio_in[4];
+    //assign get_phase = uio_in[5];
+    //assign get_amplitude = uio_in[6];
 
     strobe_generator strobe_generator_inst
     (.clk_i(clk),

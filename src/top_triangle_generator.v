@@ -18,6 +18,7 @@
 `define __TOP_TRIANGLE_GENERATOR
 
 `include "counter.v"
+`include "counter_res.v"
 `include "square_puls_generator.v"
 //`include "sawtooth_generator.v"
 `include "triangle_generator.v"
@@ -37,16 +38,28 @@ module top_triangle_generator #(
     output wire signed [N_FRAC:0] data_square_puls_o,						
     output wire data_square_puls_out_valid_strobe_o		
 );
+    wire signed [N_FRAC:0] counter_res_value;
+    wire counter_res_value_valid_strobe;
+
     wire signed [N_FRAC:0] counter_value;
     wire counter_value_valid_strobe;
 
    // wire signed [N_FRAC:0] data_sawtooth;
    // wire data_sawtooth_out_valid_strobe;
 
-    counter counter_inst
+    counter_res counter_res_inst
     (.clk_i(clk_i),
      .rst_i(rst_i),
      .amplitude_i(amplitude_i),
+     .addend_i(phase_i),			
+     .next_data_strobe_i(next_data_strobe_i), 						
+     .data_o(counter_res_value),						
+     .data_out_valid_strobe_o(counter_res_value_valid_strobe)
+    );
+
+    counter counter_inst
+    (.clk_i(clk_i),
+     .rst_i(rst_i),
      .addend_i(phase_i),			
      .next_data_strobe_i(next_data_strobe_i), 						
      .data_o(counter_value),						
@@ -67,8 +80,8 @@ module top_triangle_generator #(
     (.clk_i(clk_i),
      .rst_i(rst_i),
      .amplitude_i(amplitude_i),
-     .counter_value_i(counter_value),			
-     .next_counter_value_strobe_i(counter_value_valid_strobe), 						
+     .counter_value_i(counter_res_value),			
+     .next_counter_value_strobe_i(counter_res_value_valid_strobe), 						
      .data_o(data_sawtooth),						
      .data_out_valid_strobe_o(data_sawtooth_out_valid_strobe)
     );
@@ -76,14 +89,14 @@ module top_triangle_generator #(
     assign data_sawtooth_out_valid_strobe_o = data_sawtooth_out_valid_strobe;
     assign data_sawtooth_o = data_sawtooth;
 */
-    assign data_sawtooth_out_valid_strobe_o = counter_value_valid_strobe;
-    assign data_sawtooth_o = counter_value;
+    assign data_sawtooth_out_valid_strobe_o = counter_res_value_valid_strobe;
+    assign data_sawtooth_o = counter_res_value;
 
    triangle_generator triangle_generator_inst
     (.clk_i(clk_i),
      .rst_i(rst_i),
-     .counter_value_i(counter_value),			
-     .next_counter_value_strobe_i(counter_value_valid_strobe), 						
+     .counter_value_i(counter_res_value),			
+     .next_counter_value_strobe_i(counter_res_value_valid_strobe), 						
      .data_o(data_triangle_o),						
      .data_out_valid_strobe_o(data_triangle_out_valid_strobe_o)
     );
