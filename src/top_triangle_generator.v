@@ -46,6 +46,7 @@ module top_triangle_generator #(
     counter counter_inst
     (.clk_i(clk_i),
      .rst_i(rst_i),
+     .amplitude_i(amplitude_i),
      .addend_i(phase_i),			
      .next_data_strobe_i(next_data_strobe_i), 						
      .data_o(counter_value),						

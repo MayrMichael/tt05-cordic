@@ -22,6 +22,7 @@ module counter #(
 ) (
     input clk_i,
     input rst_i,
+    input signed [N_FRAC:0] amplitude_i,
     input signed [N_FRAC:0] addend_i,			
     input next_data_strobe_i, 						
     output wire signed [N_FRAC:0] data_o,						
@@ -47,7 +48,11 @@ module counter #(
         
         if (next_data_strobe_i == 1'b1) begin
             next_data_out_valid_strobe = 1;
-            next_counter_value = counter_value + addend_i;
+            if (counter_value <= amplitude_i) begin
+                next_counter_value = counter_value + addend_i;
+            end else begin
+                next_counter_value = ~counter_value;
+            end
         end
     end
 
