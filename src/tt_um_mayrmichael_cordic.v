@@ -19,9 +19,9 @@ module tt_um_mayrmichael_cordic (
 );
     wire [7:0] phase, amplitude;
 
-    wire [7:0] data_sin, data_triangle, data_sawtooth, data_square_puls;
+    wire [7:0] data_sin, /*data_triangle,*/ data_sawtooth, data_square_puls;
 
-    wire data_sin_out_valid_strobe, data_triangle_out_valid_strobe, data_sawtooth_out_valid_strobe, data_square_puls_out_valid_strobe;
+    wire data_sin_out_valid_strobe, /*data_triangle_out_valid_strobe,*/ data_sawtooth_out_valid_strobe, data_square_puls_out_valid_strobe;
 
     reg data_valid_strobe;
 
@@ -47,8 +47,8 @@ module tt_um_mayrmichael_cordic (
      .next_data_strobe_i(uio_in[2]), 						
      .data_sawtooth_o(data_sawtooth),						
      .data_sawtooth_out_valid_strobe_o(data_sawtooth_out_valid_strobe),
-     .data_triangle_o(data_triangle),						
-     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe),
+//     .data_triangle_o(data_triangle),						
+//     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe),
      .data_square_puls_o(data_square_puls),						
      .data_square_puls_out_valid_strobe_o(data_square_puls_out_valid_strobe)		
     );
@@ -65,9 +65,9 @@ module tt_um_mayrmichael_cordic (
         end else if (uio_in[3] == 1'b1 && uio_in[4] == 1'b0) begin
             uo_out <= data_sawtooth;
             data_valid_strobe <= data_sawtooth_out_valid_strobe;
-        end else if (uio_in[3] == 1'b0 && uio_in[4] == 1'b1) begin
-            uo_out <= data_triangle;
-            data_valid_strobe <= data_triangle_out_valid_strobe;
+        //end else if (uio_in[3] == 1'b0 && uio_in[4] == 1'b1) begin
+        //    uo_out <= data_triangle;
+        //    data_valid_strobe <= data_triangle_out_valid_strobe;
         end else begin
             uo_out <= data_square_puls;
             data_valid_strobe <= data_square_puls_out_valid_strobe;
