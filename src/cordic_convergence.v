@@ -30,8 +30,8 @@ module cordic_convergence #(
     output reg signed [N_FRAC:0] z_o,
     output reg data_out_valid_strobe_o	
 );
-    localparam HALF = 8'b01000000;
-    localparam MINUS_HALF = 8'b11000000;
+    localparam signed HALF = 8'b01000000;
+    localparam signed MINUS_HALF = 8'b11000000;
 
     wire next_data_out_valid_strobe;
     reg signed [N_FRAC:0] next_x;
