@@ -1,9 +1,9 @@
 `default_nettype none
 
-// `include "cordic_iterative.v"
-// `include "cordic_slice.v"
 
 `include "sin_generator.v"
+`include "top_triangle_generator.v"
+
 
 module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
@@ -17,39 +17,13 @@ module tt_um_mayrmichael_cordic (
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
-    // wire [7:0] x, y;
+    wire [7:0] phase, amplitude;
 
-    // /* verilator lint_off UNUSEDSIGNAL */
-    // wire [7:0] z_o, y_o;
-    // /* verilator lint_on UNUSEDSIGNAL */
+    wire [7:0] data_sin, data_triangle, data_sawtooth, data_square_puls;
 
-    // wire data_arrived, data_finished;
-    // wire [6:0] unused_i_wire;
+    wire data_sin_out_valid_strobe, data_triangle_out_valid_strobe, data_sawtooth_out_valid_strobe, data_square_puls_out_valid_strobe;
 
-    // assign x = 8'b01001011; 
-    // assign y = 8'b00000000;
-
-    // assign uio_oe = 8'b00000001;
-    // assign uio_out[7:1] = 7'b0000000;
-    // assign uio_out[0] = data_finished;
-    // assign data_arrived = uio_in[1];
-
-
-    // cordic_iterative CORDIC_ITERATIVE_INST
-    // (.clk_i(clk),
-    //  .rst_i(rst_n),
-    //  .x_i(x),
-    //  .y_i(y),
-    //  .z_i(ui_in),
-    //  .data_in_valid_strobe_i(data_arrived),
-    //  .x_o(uo_out),
-    //  .y_o(z_o),
-    //  .z_o(y_o),
-    //  .data_out_valid_strobe_o(data_finished)
-    //  );
-
-    wire [7:0] data, phase, amplitude;
-    wire data_out_valid_strobe;
+    reg data_valid_strobe;
 
     sin_generator sin_generator_inst
     (.clk_i(clk),
@@ -59,24 +33,44 @@ module tt_um_mayrmichael_cordic (
      .amplitude_i(ui_in),
      .new_amplitude_valid_strobe_i(uio_in[1]),
      .next_data_strobe_i(uio_in[2]),
-     .data_o(data),
-     .data_out_valid_strobe_o(data_out_valid_strobe),
+     .data_o(data_sin),
+     .data_out_valid_strobe_o(data_sin_out_valid_strobe),
      .phase_o(phase),
      .amplitude_o(amplitude)
     );
 
-    assign uio_out[7] = data_out_valid_strobe;
+    top_triangle_generator top_triangle_generator_inst
+    (.clk_i(clk),
+     .rst_i(rst_n),
+     .phase_i(phase),
+     .amplitude_i(amplitude),					
+     .next_data_strobe_i(uio_in[2]), 						
+     .data_sawtooth_o(data_sawtooth),						
+     .data_sawtooth_out_valid_strobe_o(data_sawtooth_out_valid_strobe),
+     .data_triangle_o(data_triangle),						
+     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe),
+     .data_square_puls_o(data_square_puls),						
+     .data_square_puls_out_valid_strobe_o(data_square_puls_out_valid_strobe)		
+    );
+
+    assign uio_out[7] = data_valid_strobe;
 
     assign uio_oe = 8'b10000000;
     assign uio_out[6:0] = 7'b0000000;
 
     always @(posedge clk ) begin
         if (uio_in[3] == 1'b1 && uio_in[4] == 1'b1) begin
-            uo_out <= amplitude;
+            uo_out <= data_sin;
+            data_valid_strobe <= data_sin_out_valid_strobe;
         end else if (uio_in[3] == 1'b1 && uio_in[4] == 1'b0) begin
-            uo_out <= phase;
+            uo_out <= data_sawtooth;
+            data_valid_strobe <= data_sawtooth_out_valid_strobe;
+        end else if (uio_in[3] == 1'b0 && uio_in[4] == 1'b1) begin
+            uo_out <= data_triangle;
+            data_valid_strobe <= data_triangle_out_valid_strobe;
         end else begin
-            uo_out <= data;
+            uo_out <= data_square_puls;
+            data_valid_strobe <= data_square_puls_out_valid_strobe;
         end
     end
 
