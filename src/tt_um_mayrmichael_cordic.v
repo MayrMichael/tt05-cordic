@@ -9,7 +9,7 @@
 module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
     input  wire [7:0] ui_in,    // Dedicated inputs - connected to the input switches
-    output reg [7:0] uo_out,   // Dedicated outputs - connected to the 7 segment display
+    output wire [7:0] uo_out,   // Dedicated outputs - connected to the 7 segment display
     input  wire [7:0] uio_in,   // IOs: Bidirectional Input path
     output wire [7:0] uio_out,  // IOs: Bidirectional Output path
     output wire [7:0] uio_oe,   // IOs: Bidirectional Enable path (active high: 0=input, 1=output)
@@ -19,29 +19,50 @@ module tt_um_mayrmichael_cordic (
     input  wire       rst_n     // reset_n - low to reset
 );
     wire [7:0] phase, amplitude;
-
     wire [7:0] data_sin, data_triangle, data_sawtooth, data_square_puls;
-
     wire data_sin_out_valid_strobe, data_triangle_out_valid_strobe, data_sawtooth_out_valid_strobe,  data_square_puls_out_valid_strobe;
 
     reg data_valid_strobe;
+    reg [7:0] data;
 
     wire strobe;
+    wire set_phase, set_amplitude;
+    wire [7:0] set_phase_amplitude_value;
+    wire enable;
+    wire [1:0] waveform;
+
+    localparam SINUS = 2'b00;
+    localparam SQUARE_PULSE = 2'b01;
+    localparam SAWTOOTH = 2'b10;
+    localparam TRIANGLE = 2'b11;
+
+    assign set_phase_amplitude_value = ui_in;
+    assign uo_out = data;
+
+    assign uio_oe = 8'b10000000;
+
+    assign uio_out[7] = data_valid_strobe;
+    assign uio_out[6:0] = 7'b0000000;
+
+    assign enable = uio_in[0];
+    assign waveform = uio_in[2:1];
+    assign set_phase = uio_in[3];
+    assign set_amplitude = uio_in[4];
 
     strobe_generator strobe_generator_inst
     (.clk_i(clk),
      .rst_i(rst_n),
-     .enable_i(uio_in[2]),
+     .enable_i(enable),
      .strobe_o(strobe)
     );
 
     sin_generator sin_generator_inst
     (.clk_i(clk),
      .rst_i(rst_n),
-     .phase_i(ui_in),
-     .new_phase_valid_strobe_i(uio_in[0]),
-     .amplitude_i(ui_in),
-     .new_amplitude_valid_strobe_i(uio_in[1]),
+     .phase_i(set_phase_amplitude_value),
+     .new_phase_valid_strobe_i(set_phase),
+     .amplitude_i(set_phase_amplitude_value),
+     .new_amplitude_valid_strobe_i(set_amplitude),
      .next_data_strobe_i(strobe),
      .data_o(data_sin),
      .data_out_valid_strobe_o(data_sin_out_valid_strobe),
@@ -63,24 +84,34 @@ module tt_um_mayrmichael_cordic (
      .data_square_puls_out_valid_strobe_o(data_square_puls_out_valid_strobe)		
     );
 
-    assign uio_out[7] = data_valid_strobe;
 
-    assign uio_oe = 8'b10000000;
-    assign uio_out[6:0] = 7'b0000000;
-
-    always @(posedge clk ) begin
-        if (uio_in[3] == 1'b1 && uio_in[4] == 1'b1) begin
-            uo_out <= data_sin;
-            data_valid_strobe <= data_sin_out_valid_strobe;
-        end else if (uio_in[3] == 1'b1 && uio_in[4] == 1'b0) begin
-            uo_out <= data_sawtooth;
-            data_valid_strobe <= data_sawtooth_out_valid_strobe;
-        end else if (uio_in[3] == 1'b0 && uio_in[4] == 1'b1) begin
-            uo_out <= data_triangle;
-            data_valid_strobe <= data_triangle_out_valid_strobe;
+    always @(posedge clk) begin
+        if (rst_n == 1'b0) begin
+            data <= 0;
+            data_valid_strobe <= 0;
         end else begin
-            uo_out <= data_square_puls;
-            data_valid_strobe <= data_square_puls_out_valid_strobe;
+            case (waveform)
+                SINUS: begin
+                    data_valid_strobe <= data_sin_out_valid_strobe;
+                    if (data_sin_out_valid_strobe == 1'b1) 
+                        data <= data_sin;
+                end 
+                SAWTOOTH: begin
+                    data_valid_strobe <= data_sawtooth_out_valid_strobe;
+                    if (data_sawtooth_out_valid_strobe == 1'b1) 
+                        data <= data_sawtooth;
+                end
+                TRIANGLE: begin
+                    data_valid_strobe <= data_triangle_out_valid_strobe;
+                    if (data_triangle_out_valid_strobe == 1'b1) 
+                        data <= data_triangle;
+                end
+                SQUARE_PULSE: begin
+                    data_valid_strobe <= data_square_puls_out_valid_strobe;
+                    if (data_square_puls_out_valid_strobe == 1'b1) 
+                        data <= data_square_puls;
+                end
+            endcase
         end
     end
 
