@@ -15,6 +15,7 @@ project:
     - sawtooth_generator.v
     - square_puls_generator.v
     - top_triangle_generator.v
+    - strobe_generator.v
   top_module:  "tt_um_mayrmichael_cordic"      # Put the name of your top module here, must start with "tt_um_". Make it unique by including your github username
 
 # How many tiles your design occupies? A single tile is about 167x108 uM.

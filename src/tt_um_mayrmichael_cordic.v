@@ -3,6 +3,7 @@
 
 `include "sin_generator.v"
 `include "top_triangle_generator.v"
+`include "strobe_generator.v"
 
 
 module tt_um_mayrmichael_cordic (
@@ -25,6 +26,15 @@ module tt_um_mayrmichael_cordic (
 
     reg data_valid_strobe;
 
+    wire strobe;
+
+    strobe_generator strobe_generator_inst
+    (.clk_i(clk),
+     .rst_i(rst_n),
+     .enable_i(uio_in[2]),
+     .strobe_o(strobe)
+    );
+
     sin_generator sin_generator_inst
     (.clk_i(clk),
      .rst_i(rst_n),
@@ -32,7 +42,7 @@ module tt_um_mayrmichael_cordic (
      .new_phase_valid_strobe_i(uio_in[0]),
      .amplitude_i(ui_in),
      .new_amplitude_valid_strobe_i(uio_in[1]),
-     .next_data_strobe_i(uio_in[2]),
+     .next_data_strobe_i(strobe),
      .data_o(data_sin),
      .data_out_valid_strobe_o(data_sin_out_valid_strobe),
      .phase_o(phase),
@@ -44,7 +54,7 @@ module tt_um_mayrmichael_cordic (
      .rst_i(rst_n),
      .phase_i(phase),
      .amplitude_i(amplitude),					
-     .next_data_strobe_i(uio_in[2]), 						
+     .next_data_strobe_i(strobe), 						
      .data_sawtooth_o(data_sawtooth),						
      .data_sawtooth_out_valid_strobe_o(data_sawtooth_out_valid_strobe),
      .data_triangle_o(data_triangle),						
