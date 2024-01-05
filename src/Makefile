@@ -10,6 +10,7 @@ ifneq ($(GATES),yes)
 
 # this is the only part you should need to modify:
 VERILOG_SOURCES += $(PWD)/tb.v $(PWD)/tt_um_mayrmichael_cordic.v $(PWD)/cordic_slice.v $(PWD)/cordic_iterative.v $(PWD)/cordic_convergence.v $(PWD)/sin_generator.v
+VERILOG_SOURCES += $(PWD)/counter.v $(PWD)/counter_res.v $(PWD)/square_puls_generator.v $(PWD)/strobe_generator.v $(PWD)/top_triangle_generator.v $(PWD)/triangle_generator.v
 
 else
 

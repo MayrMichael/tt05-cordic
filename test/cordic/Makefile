@@ -8,5 +8,5 @@ iterative: clean
 	make -f makefile.iterative
 
 clean:
-	rm -r sim_build
-	rm results.xml
+	rm -r -f sim_build
+	rm -f results.xml
