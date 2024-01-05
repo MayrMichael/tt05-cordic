@@ -20,7 +20,7 @@
 `include "counter.v"
 `include "square_puls_generator.v"
 //`include "sawtooth_generator.v"
-//`include "triangle_generator.v"
+`include "triangle_generator.v"
 
 module top_triangle_generator #(
     parameter N_FRAC = 7
@@ -30,18 +30,18 @@ module top_triangle_generator #(
     input signed [N_FRAC:0] phase_i,
     input signed [N_FRAC:0] amplitude_i,					
     input next_data_strobe_i, 						
-//    output wire signed [N_FRAC:0] data_sawtooth_o,						
-//    output wire data_sawtooth_out_valid_strobe_o,
-//    output wire signed [N_FRAC:0] data_triangle_o,						
-//    output wire data_triangle_out_valid_strobe_o,
+    output wire signed [N_FRAC:0] data_sawtooth_o,						
+    output wire data_sawtooth_out_valid_strobe_o,
+    output wire signed [N_FRAC:0] data_triangle_o,						
+    output wire data_triangle_out_valid_strobe_o,
     output wire signed [N_FRAC:0] data_square_puls_o,						
     output wire data_square_puls_out_valid_strobe_o		
 );
     wire signed [N_FRAC:0] counter_value;
     wire counter_value_valid_strobe;
 
-//    wire signed [N_FRAC:0] data_sawtooth;
-//    wire data_sawtooth_out_valid_strobe;
+   // wire signed [N_FRAC:0] data_sawtooth;
+   // wire data_sawtooth_out_valid_strobe;
 
     counter counter_inst
     (.clk_i(clk_i),
@@ -75,15 +75,17 @@ module top_triangle_generator #(
     assign data_sawtooth_out_valid_strobe_o = data_sawtooth_out_valid_strobe;
     assign data_sawtooth_o = data_sawtooth;
 */
+    assign data_sawtooth_out_valid_strobe_o = counter_value_valid_strobe;
+    assign data_sawtooth_o = counter_value;
 
-//   triangle_generator triangle_generator_inst
-//    (.clk_i(clk_i),
-//     .rst_i(rst_i),
-//     .counter_value_i(data_sawtooth),			
-//     .next_counter_value_strobe_i(data_sawtooth_out_valid_strobe), 						
-//     .data_o(data_triangle_o),						
-//     .data_out_valid_strobe_o(data_triangle_out_valid_strobe_o)
-//    );
+   triangle_generator triangle_generator_inst
+    (.clk_i(clk_i),
+     .rst_i(rst_i),
+     .counter_value_i(counter_value),			
+     .next_counter_value_strobe_i(counter_value_valid_strobe), 						
+     .data_o(data_triangle_o),						
+     .data_out_valid_strobe_o(data_triangle_out_valid_strobe_o)
+    );
 
 endmodule
 
