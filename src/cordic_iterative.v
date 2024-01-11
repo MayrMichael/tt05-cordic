@@ -50,9 +50,9 @@ module cordic_iterative #(
     assign ANGLES_VECTOR[5] = 8'b00000001;
     // generated from cordic_param.py end
 
-    reg signed [N_FRAC:0] next_x_in, x_in;
-    reg signed [N_FRAC:0] next_y_in, y_in;
-    reg signed [N_FRAC:0] next_z_in, z_in;
+    // reg signed [N_FRAC:0] next_x_in, x_in;
+    // reg signed [N_FRAC:0] next_y_in, y_in;
+    // reg signed [N_FRAC:0] next_z_in, z_in;
 
     reg next_data_out_valid_strobe, data_out_valid_strobe;
     reg next_input_select, input_select;
@@ -74,17 +74,17 @@ module cordic_iterative #(
 
     always @(posedge clk_i) begin
         if (rst_i == 1'b0) begin
-            x_in <= 0;
-            y_in <= 0;
-            z_in <= 0;
+            // x_in <= 0;
+            // y_in <= 0;
+            // z_in <= 0;
             data_out_valid_strobe <= 0;
             counter_value <= 0;
             state <= IDLE_STATE;
             input_select <= 0;
         end else begin
-            x_in <= next_x_in;
-            y_in <= next_y_in;
-            z_in <= next_z_in;
+            // x_in <= next_x_in;
+            // y_in <= next_y_in;
+            // z_in <= next_z_in;
             data_out_valid_strobe <= next_data_out_valid_strobe;
             counter_value <= next_counter_value;
             state <= next_state;
@@ -111,12 +111,14 @@ module cordic_iterative #(
      );
 
 
+    
+
     always @* begin
         next_state = state;
         next_data_out_valid_strobe = data_out_valid_strobe;
-        next_x_in = x_in;
-        next_y_in = y_in;
-        next_z_in = z_in;
+        // next_x_in = x_in;
+        // next_y_in = y_in;
+        // next_z_in = z_in;
         next_counter_value = counter_value;
         next_input_select = input_select;
 
@@ -124,9 +126,9 @@ module cordic_iterative #(
             IDLE_STATE: begin
                 if (data_in_valid_strobe_i == 1'b1) begin
                     next_state = CALCULATION_STATE;
-                    next_x_in = x_i;
-                    next_y_in = y_i;
-                    next_z_in = z_i;
+                    // next_x_in = x_i;
+                    // next_y_in = y_i;
+                    // next_z_in = z_i;
                     next_counter_value = 0;
                     next_input_select = 0;
                 end
@@ -156,9 +158,12 @@ module cordic_iterative #(
 
     always @* begin
         if (input_select == 1'b0) begin
-            x_mux = x_in;
-            y_mux = y_in;
-            z_mux = z_in;
+            // x_mux = x_in;
+            // y_mux = y_in;
+            // z_mux = z_in;
+            x_mux = x_i;
+            y_mux = y_i;
+            z_mux = z_i;
         end else begin
             x_mux = x_out;
             y_mux = y_out;
