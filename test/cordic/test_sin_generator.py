@@ -24,7 +24,7 @@ async def cosim_sin_generator(dut):
     iterations = 6
     sfixed_fract = 7
     phase = 0.308807373046875
-    n_samples = 100
+    n_samples = 300
 
     FRAC_BITS = sfixed_fract + 1
 
@@ -38,8 +38,6 @@ async def cosim_sin_generator(dut):
     xi = cordic.quantize_value(xi * k, lsb)
     xi = cordic.quantize_value(xi - lsb, lsb)
 
-    dut.new_phase_valid_strobe_i.value = 0
-    dut.new_amplitude_valid_strobe_i.value = 0
     dut.next_data_strobe_i.value = 0
 
     dut.phase_i.value = frac2bin(phase, sfixed_fract, FRAC_BITS)
@@ -52,14 +50,8 @@ async def cosim_sin_generator(dut):
 
     # set amplitude and phase
     await FallingEdge(dut.clk_i)
-    dut.new_phase_valid_strobe_i.value = 1
-    dut.new_amplitude_valid_strobe_i.value = 1
 
-    await FallingEdge(dut.clk_i)
-    dut.new_phase_valid_strobe_i.value = 0
-    dut.new_amplitude_valid_strobe_i.value = 0
-
-    dut._log.info(f'{"dut".center(8)} | {"python".center(8)}')
+    dut._log.info(f'#{0:>03} -> {"dut".center(8)} | {"python".center(8)}')
     for i in range(n_samples):
         await FallingEdge(dut.clk_i)
         dut.next_data_strobe_i.value = 1
@@ -70,7 +62,7 @@ async def cosim_sin_generator(dut):
         # dut._log.info('----------------------- input convergence ----------------------------------')
         # dut._log.info(f'{dut.amplitude.value.binstr} | {dut.y_const.value.binstr} | {dut.z_phase.value.binstr} | dut')
         # dut._log.info(f'{frac2bin(xi_values[i], sfixed_fract, FRAC_BITS).binstr} | {frac2bin(yi_values[i], sfixed_fract, FRAC_BITS).binstr} | {frac2bin(zi_values[i], sfixed_fract, FRAC_BITS).binstr} | python')
-        assert dut.amplitude.value.binstr == frac2bin(xi_values[i], sfixed_fract, FRAC_BITS).binstr
+        assert dut.amplitude_i.value.binstr == frac2bin(xi_values[i], sfixed_fract, FRAC_BITS).binstr
         assert dut.y_const.value.binstr == frac2bin(yi_values[i], sfixed_fract, FRAC_BITS).binstr
         assert dut.z_phase.value.binstr == frac2bin(zi_values[i], sfixed_fract, FRAC_BITS).binstr
         # dut._log.info('-------------------------------------------------------------------------------')

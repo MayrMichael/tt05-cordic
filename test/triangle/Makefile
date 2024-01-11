@@ -1,5 +1,5 @@
-square: clean
-	make -f makefile.square
+top: clean
+	make -f makefile.top
 
 wave: clean
 	make -f makefile.wave

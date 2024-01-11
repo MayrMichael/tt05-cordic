@@ -26,21 +26,11 @@ module sin_generator #(
     input clk_i,
     input rst_i,
     input signed [N_FRAC:0] phase_i,
-    input new_phase_valid_strobe_i,	
-    input signed [N_FRAC:0] amplitude_i,
-    input new_amplitude_valid_strobe_i,						
+    input signed [N_FRAC:0] amplitude_i,						
     input next_data_strobe_i, 						
     output wire signed [N_FRAC:0] data_o,						
-    output wire data_out_valid_strobe_o,
-    output wire signed [N_FRAC:0] phase_o,
-    output wire signed [N_FRAC:0] amplitude_o	
-);
-    reg signed [N_FRAC:0] phase;
-    wire signed [N_FRAC:0] next_phase;
-
-    reg signed [N_FRAC:0] amplitude;
-    wire signed [N_FRAC:0] next_amplitude;
-    
+    output wire data_out_valid_strobe_o	
+);    
     reg signed [N_FRAC:0] z_phase, next_z_phase;
 
     reg phase_increment_done_strobe, next_phase_increment_done_strobe;
@@ -59,23 +49,14 @@ module sin_generator #(
 
     always @(posedge clk_i) begin
         if (rst_i == 1'b0) begin
-            phase <= 0;
-            amplitude <= 0;
             z_phase <= 0;
             phase_increment_done_strobe <= 0;
         end else begin
-            phase <= next_phase;
-            amplitude <= next_amplitude;
             z_phase <= next_z_phase;
             phase_increment_done_strobe <= next_phase_increment_done_strobe;
         end
     end
 
-    assign next_phase = (new_phase_valid_strobe_i == 1'b1) ? phase_i : phase;
-    assign next_amplitude = (new_amplitude_valid_strobe_i == 1'b1) ? amplitude_i : amplitude; 
-
-    assign amplitude_o = amplitude;
-    assign phase_o = phase;
 
     always @* begin
         next_phase_increment_done_strobe = 0;
@@ -83,14 +64,14 @@ module sin_generator #(
         
         if (next_data_strobe_i == 1'b1) begin
             next_phase_increment_done_strobe = 1;
-            next_z_phase = z_phase + phase;
+            next_z_phase = z_phase + phase_i;
         end
     end
 
     cordic_convergence cordic_convergence_inst
     (.clk_i(clk_i),
      .rst_i(rst_i),
-     .x_i(amplitude),
+     .x_i(amplitude_i),
      .y_i(y_const),
      .z_i(z_phase),
      .data_in_valid_strobe_i(phase_increment_done_strobe),

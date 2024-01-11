@@ -18,7 +18,8 @@
 `define __STROBE_GENERATOR
 
 module strobe_generator #(
-    parameter MAX_STROBE = 10
+    // parameter MAX_STROBE = 10,
+    parameter BW = 4
 ) (
     input clk_i,
     input rst_i,
@@ -26,9 +27,10 @@ module strobe_generator #(
     output wire strobe_o
 );
 
-    localparam BW_COUNTER = $clog2(MAX_STROBE);
-    reg signed [BW_COUNTER-1:0] counter, next_counter;
+    reg signed [BW-1:0] counter, next_counter;
     reg strobe, next_strobe;
+
+    localparam STOP = 4'b1001;
 
     always @(posedge clk_i) begin
         if (rst_i == 1'b0) begin
@@ -44,7 +46,7 @@ module strobe_generator #(
         next_counter = counter;
         next_strobe = 1'b0;
         if (enable_i == 1'b1) begin
-            if ((MAX_STROBE-1) == counter) begin
+            if (counter == STOP) begin
                 next_counter = 0;
                 next_strobe = 1'b1;
             end else begin

@@ -1,11 +1,20 @@
+// Copyright 2023 Michael Mayr
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE−2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+
 `default_nettype none
 
-
-`include "sin_generator.v"
-`include "top_triangle_generator.v"
-`include "strobe_generator.v"
-`include "square_puls_generator.v"
-
+`include "wave_generator.v"
 
 module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
@@ -19,24 +28,16 @@ module tt_um_mayrmichael_cordic (
     input  wire       clk,      // clock
     input  wire       rst_n     // reset_n - low to reset
 );
-    wire [7:0] phase, amplitude;
-    wire [7:0] data_sin, data_triangle, data_sawtooth, data_square_puls;
-    wire data_sin_out_valid_strobe, data_triangle_out_valid_strobe, data_sawtooth_out_valid_strobe,  data_square_puls_out_valid_strobe;
+    wire data_valid_strobe;
+    wire [7:0] data;
 
-    reg data_valid_strobe;
-    reg [7:0] data;
-
-    wire strobe;
     wire set_phase, set_amplitude;
 
     wire [7:0] set_phase_amplitude_value;
     wire enable;
     wire [1:0] waveform;
 
-    localparam SINUS = 2'b00;
-    localparam SQUARE_PULSE = 2'b01;
-    localparam SAWTOOTH = 2'b10;
-    localparam TRIANGLE = 2'b11;
+
 
     assign set_phase_amplitude_value = ui_in;
     
@@ -50,83 +51,18 @@ module tt_um_mayrmichael_cordic (
     assign waveform = uio_in[2:1];
     assign set_phase = uio_in[3];
     assign set_amplitude = uio_in[4];
-    //assign get_phase = uio_in[5];
-    //assign get_amplitude = uio_in[6];
 
-    strobe_generator strobe_generator_inst
-    (.clk_i(clk),
-     .rst_i(rst_n),
-     .enable_i(enable),
-     .strobe_o(strobe)
+    wave_generator wave_generator_inst
+    (
+    .clk_i(clk),
+    .rst_i(rst_n),
+    .enable_i(enable),
+    .waveform_i(waveform),
+    .set_phase_strobe_i(set_phase),
+    .set_amplitude_strobe_i(set_amplitude),
+    .data_i(set_phase_amplitude_value),
+    .data_o(data),
+    .data_valid_strobe_o(data_valid_strobe)
     );
-
-    sin_generator sin_generator_inst
-    (.clk_i(clk),
-     .rst_i(rst_n),
-     .phase_i(set_phase_amplitude_value),
-     .new_phase_valid_strobe_i(set_phase),
-     .amplitude_i(set_phase_amplitude_value),
-     .new_amplitude_valid_strobe_i(set_amplitude),
-     .next_data_strobe_i(strobe),
-     .data_o(data_sin),
-     .data_out_valid_strobe_o(data_sin_out_valid_strobe),
-     .phase_o(phase),
-     .amplitude_o(amplitude)
-    );
-
-    top_triangle_generator top_triangle_generator_inst
-    (.clk_i(clk),
-     .rst_i(rst_n),
-     .phase_i(phase),
-     .amplitude_i(amplitude),					
-     .next_data_strobe_i(strobe), 						
-     .data_sawtooth_o(data_sawtooth),						
-     .data_sawtooth_out_valid_strobe_o(data_sawtooth_out_valid_strobe),
-     .data_triangle_o(data_triangle),						
-     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe)//,
-//     .data_square_puls_o(data_square_puls),						
-//     .data_square_puls_out_valid_strobe_o(data_square_puls_out_valid_strobe)		
-    );
-
-    square_puls_generator square_puls_generator_inst
-    (.clk_i(clk),
-     .rst_i(rst_n),
-     .phase_i(phase),
-     .threshold_i(amplitude),		
-     .next_data_strobe_i(strobe), 						
-     .data_o(data_square_puls),						
-     .data_out_valid_strobe_o(data_square_puls_out_valid_strobe)
-    );
-
-
-    always @(posedge clk) begin
-        if (rst_n == 1'b0) begin
-            data <= 0;
-            data_valid_strobe <= 0;
-        end else begin
-            case (waveform)
-                SINUS: begin
-                    data_valid_strobe <= data_sin_out_valid_strobe;
-                    if (data_sin_out_valid_strobe == 1'b1) 
-                        data <= data_sin;
-                end 
-                SAWTOOTH: begin
-                    data_valid_strobe <= data_sawtooth_out_valid_strobe;
-                    if (data_sawtooth_out_valid_strobe == 1'b1) 
-                        data <= data_sawtooth;
-                end
-                TRIANGLE: begin
-                    data_valid_strobe <= data_triangle_out_valid_strobe;
-                    if (data_triangle_out_valid_strobe == 1'b1) 
-                        data <= data_triangle;
-                end
-                SQUARE_PULSE: begin
-                    data_valid_strobe <= data_square_puls_out_valid_strobe;
-                    if (data_square_puls_out_valid_strobe == 1'b1) 
-                        data <= data_square_puls;
-                end
-            endcase
-        end
-    end
 
 endmodule
