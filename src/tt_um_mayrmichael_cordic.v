@@ -15,6 +15,7 @@
 `default_nettype none
 
 `include "wave_generator.v"
+`include "spi_master_only_tx_single_cs.v"
 
 module tt_um_mayrmichael_cordic (
     /* verilator lint_off UNUSEDSIGNAL */
@@ -42,13 +43,13 @@ module tt_um_mayrmichael_cordic (
     assign uo_out = data;
 
     assign uio_oe = 8'b11100000;
-    // assign uio_out[7] = sclk;
-    // assign uio_out[6] = sdo;
-    // assign uio_out[5] = cs;
+    assign uio_out[7] = spi_clk;
+    assign uio_out[6] = spi_mosi;
+    assign uio_out[5] = spi_cs;
 
-    assign uio_out[7] = data_valid_strobe;
-    assign uio_out[6] = 1'b0;
-    assign uio_out[5] = 1'b0;;
+    // assign uio_out[7] = data_valid_strobe;
+    // assign uio_out[6] = 1'b0;
+    // assign uio_out[5] = 1'b0;;
 
     assign uio_out[4:0] = 5'b00000;
 
@@ -57,52 +58,20 @@ module tt_um_mayrmichael_cordic (
     assign set_phase = uio_in[3];
     assign set_amplitude = uio_in[4];
 
-    // wire sclk;
+    wire spi_clk;
+    wire spi_mosi;
+    wire spi_cs;
 
-    // reg sdo, cs;
-    // reg next_sdo, next_cs;
-    // reg [2:0] next_counter, counter;
-
-    // reg state, next_state;
-
-    // always @(posedge clk) begin
-    //     if (rst_n == 1'b0) begin
-    //         sdo <= 0;
-    //         cs <= 1;
-    //         counter <= 0;
-    //         state <= 0;
-    //     end else begin
-    //         sdo <= next_sdo;
-    //         cs <= next_cs;
-    //         counter <= next_counter;
-    //         state <= next_state;
-    //     end
-    // end
-
-    // assign sclk = (state == 1'b1) ? clk : 1'b1;
-
-    // always @* begin
-    //     next_cs = cs;
-    //     next_sdo = sdo;
-    //     next_state = state;
-    //     next_counter = counter;
-
-    //     if (state == 1'b0) begin
-    //         if (data_valid_strobe == 1'b1) begin
-    //             next_cs = 0;
-    //             next_counter = 0;
-    //             next_state = 1'b1;
-    //         end
-    //     end else begin
-    //         next_counter = counter + 1;
-    //         next_sdo = data[counter];
-
-    //         if (counter == 3'b111) begin
-    //             next_cs = 1;
-    //             next_state = 0;
-    //         end
-    //     end
-    // end
+    spi_master_only_tx_single_cs spi_master_only_tx_single_cs_inst
+    (
+    .clk_i(clk),
+    .rst_i(rst_n),
+    .data_i(data), 
+    .data_in_valid_strobe_i(data_valid_strobe), 
+    .spi_clk_o(spi_clk),
+    .spi_mosi_o(spi_mosi),
+    .spi_cs_o(spi_cs)
+    );
 
     wave_generator wave_generator_inst
     (
