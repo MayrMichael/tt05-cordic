@@ -15,10 +15,6 @@ test/triangle/sim_build
 test/triangle/__pycache__/
 test/triangle/results.xml
 test/triangle/user_config.tcl
-test/square_puls/sim_build
-test/square_puls/__pycache__/
-test/square_puls/results.xml
-test/square_puls/user_config.tcl
 test/spi/sim_build
 test/spi/__pycache__/
 test/spi/results.xml

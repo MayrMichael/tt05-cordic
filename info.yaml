@@ -7,15 +7,18 @@ project:
 # Source files must be in ./src and you must list each source file separately
   source_files:        
     - tt_um_mayrmichael_cordic.v
+    - wave_generator.v
     - cordic_iterative.v
     - cordic_slice.v
     - cordic_convergence.v
     - sin_generator.v
     - counter.v
-    - counter_res.v
     - square_puls_generator.v
+    - triangle_generator.v
     - top_triangle_generator.v
     - strobe_generator.v
+    - spi_master_only_tx_single_cs.v
+    - spi_master_only_tx.v
   top_module:  "tt_um_mayrmichael_cordic"      # Put the name of your top module here, must start with "tt_um_". Make it unique by including your github username
 
 # How many tiles your design occupies? A single tile is about 167x108 uM.

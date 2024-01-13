@@ -1,9 +1,0 @@
-square: clean
-	make -f makefile.square
-
-wave: clean
-	make -f makefile.wave
-
-clean:
-	rm -r -f sim_build
-	rm -f results.xml
