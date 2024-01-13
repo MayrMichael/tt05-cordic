@@ -47,10 +47,6 @@ module tt_um_mayrmichael_cordic (
     assign uio_out[6] = spi_mosi;
     assign uio_out[5] = spi_cs;
 
-    // assign uio_out[7] = data_valid_strobe;
-    // assign uio_out[6] = 1'b0;
-    // assign uio_out[5] = 1'b0;;
-
     assign uio_out[4:0] = 5'b00000;
 
     assign enable = uio_in[0];
