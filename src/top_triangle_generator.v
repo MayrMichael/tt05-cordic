@@ -19,6 +19,7 @@
 
 `include "counter_res.v"
 `include "triangle_generator.v"
+`include "square_puls_generator.v"
 
 module top_triangle_generator #(
     parameter N_FRAC = 7
@@ -26,12 +27,15 @@ module top_triangle_generator #(
     input clk_i,
     input rst_i,
     input signed [N_FRAC:0] phase_i,
-    input signed [N_FRAC:0] amplitude_i,					
+    input signed [N_FRAC:0] amplitude_i,
+    input overflow_mode_i,			
     input next_data_strobe_i, 						
     output wire signed [N_FRAC:0] data_sawtooth_o,						
     output wire data_sawtooth_out_valid_strobe_o,
     output wire signed [N_FRAC:0] data_triangle_o,						
-    output wire data_triangle_out_valid_strobe_o	
+    output wire data_triangle_out_valid_strobe_o,
+    output wire signed [N_FRAC:0] data_square_puls_o,						
+    output wire data_square_puls_out_valid_strobe_o	
 );
     wire signed [N_FRAC:0] counter_res_value;
     wire counter_res_value_valid_strobe;
@@ -40,7 +44,8 @@ module top_triangle_generator #(
     (.clk_i(clk_i),
      .rst_i(rst_i),
      .amplitude_i(amplitude_i),
-     .addend_i(phase_i),			
+     .addend_i(phase_i),
+     .overflow_mode_i(overflow_mode_i),			
      .next_data_strobe_i(next_data_strobe_i), 						
      .data_o(counter_res_value),						
      .data_out_valid_strobe_o(counter_res_value_valid_strobe)
@@ -56,6 +61,16 @@ module top_triangle_generator #(
      .next_counter_value_strobe_i(counter_res_value_valid_strobe), 						
      .data_o(data_triangle_o),						
      .data_out_valid_strobe_o(data_triangle_out_valid_strobe_o)
+    );
+
+    square_puls_generator square_puls_generator_inst
+    (.clk_i(clk_i),
+     .rst_i(rst_i),
+     .threshold_i(amplitude_i),
+     .counter_value_i(counter_res_value),		
+     .counter_value_valid_strobe_i(counter_res_value_valid_strobe), 						
+     .data_o(data_square_puls_o),						
+     .data_out_valid_strobe_o(data_square_puls_out_valid_strobe_o)
     );
 
 endmodule

@@ -20,7 +20,6 @@
 `include "sin_generator.v"
 `include "top_triangle_generator.v"
 `include "strobe_generator.v"
-`include "square_puls_generator.v"
 
 module wave_generator #(
     parameter N_FRAC = 7
@@ -49,12 +48,14 @@ module wave_generator #(
     reg signed [N_FRAC:0] data;
 
     wire strobe;
+    wire overflow_mode;
 
     localparam SINUS = 2'b00;
     localparam SQUARE_PULSE = 2'b01;
     localparam SAWTOOTH = 2'b10;
     localparam TRIANGLE = 2'b11;
 
+    assign overflow_mode = waveform_i == SQUARE_PULSE ? 1'b1 : 1'b0;
 
     strobe_generator strobe_generator_inst
     (.clk_i(clk_i),
@@ -77,24 +78,16 @@ module wave_generator #(
     (.clk_i(clk_i),
      .rst_i(rst_i),
      .phase_i(phase),
-     .amplitude_i(amplitude),					
+     .amplitude_i(amplitude),
+     .overflow_mode_i(overflow_mode),					
      .next_data_strobe_i(strobe), 						
      .data_sawtooth_o(data_sawtooth),						
      .data_sawtooth_out_valid_strobe_o(data_sawtooth_out_valid_strobe),
      .data_triangle_o(data_triangle),						
-     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe)	
+     .data_triangle_out_valid_strobe_o(data_triangle_out_valid_strobe),
+     .data_square_puls_o(data_square_puls),
+     .data_square_puls_out_valid_strobe_o(data_square_puls_out_valid_strobe)
     );
-
-    square_puls_generator square_puls_generator_inst
-    (.clk_i(clk_i),
-     .rst_i(rst_i),
-     .phase_i(phase),
-     .threshold_i(amplitude),		
-     .next_data_strobe_i(strobe), 						
-     .data_o(data_square_puls),						
-     .data_out_valid_strobe_o(data_square_puls_out_valid_strobe)
-    );
-
 
     always @(posedge clk_i) begin
         if (rst_i == 1'b0) begin
