@@ -50,6 +50,9 @@ module spi_master_only_tx #(
     reg spi_mosi, next_spi_mosi;
     reg tx_ready, next_tx_ready;
 
+    reg data_in_valid_strobe;
+    wire next_data_in_valid_strobe;
+
     // CPOL: Clock Polarity
     // CPOL=0 means clock idles at 0, leading edge is rising edge.
     // CPOL=1 means clock idles at 1, leading edge is falling edge.
@@ -76,6 +79,8 @@ module spi_master_only_tx #(
             tx_bit_counter <= 3'b111; // send MSb first
 
             spi_clk_additional  <= clk_polarity;
+
+            data_in_valid_strobe <= 0;
         end else begin
             tx_ready <= next_tx_ready;
             spi_clk_edges <= next_spi_clk_edges;
@@ -89,6 +94,7 @@ module spi_master_only_tx #(
 
             spi_clk_additional  <= next_spi_clk_additional;
 
+            data_in_valid_strobe <= next_data_in_valid_strobe;
         end
     end
 
@@ -97,6 +103,9 @@ module spi_master_only_tx #(
     assign spi_clk_o = spi_clk_additional;
     assign spi_mosi_o = spi_mosi;
     assign tx_ready_o = tx_ready;
+
+
+    assign next_data_in_valid_strobe = data_in_valid_strobe_i;
     
 
     always @* begin
@@ -137,11 +146,14 @@ module spi_master_only_tx #(
 
         if (tx_ready == 1'b1) begin
             next_tx_bit_counter = 3'b111;
-        end else if ((data_in_valid_strobe_i & ~clk_phase) == 1'b1) begin
+            next_spi_mosi = 0;
+        end else if ((data_in_valid_strobe & ~clk_phase) == 1'b1) begin
             next_spi_mosi = data_i[3'b111];
             next_tx_bit_counter = 3'b110;
         end else if ((leading_edge & clk_phase) | (trailing_edge & ~clk_phase) == 1'b1) begin
-            next_tx_bit_counter = tx_bit_counter - 1'b1;
+            if (tx_bit_counter > 0) begin
+                next_tx_bit_counter = tx_bit_counter - 1'b1;
+            end
             next_spi_mosi = data_i[tx_bit_counter];
         end
     end

@@ -19,3 +19,11 @@ test/square_puls/sim_build
 test/square_puls/__pycache__/
 test/square_puls/results.xml
 test/square_puls/user_config.tcl
+test/spi/sim_build
+test/spi/__pycache__/
+test/spi/results.xml
+test/spi/user_config.tcl
+test/strobe/sim_build
+test/strobe/__pycache__/
+test/strobe/results.xml
+test/strobe/user_config.tcl
